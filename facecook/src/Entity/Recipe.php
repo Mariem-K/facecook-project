@@ -52,6 +52,12 @@ class Recipe
      */
     private $status;
 
+    public function __construct()
+    {
+        $this->created_at = new \DateTime();
+        $this->status = 1;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
