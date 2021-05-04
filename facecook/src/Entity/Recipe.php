@@ -6,6 +6,7 @@ use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=RecipeRepository::class)
@@ -16,41 +17,49 @@ class Recipe
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"browse"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"browse"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"browse"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"browse"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"browse"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"browse"})
      */
     private $updated_at;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"browse"})
      */
     private $slug;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"browse"})
      */
     private $status;
 

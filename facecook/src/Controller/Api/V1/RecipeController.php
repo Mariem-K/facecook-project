@@ -2,19 +2,25 @@
 
 namespace App\Controller\Api\V1;
 
+use App\Repository\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/api/v1/recipes", name="api_v1_recipes_")
+ */
 class RecipeController extends AbstractController
 {
     /**
-     * @Route("/api/v1/recipe", name="api_v1_recipe")
+     * @Route("", name="browse", methods={"GET"})
      */
-    public function index(): Response
+    public function browse(RecipeRepository $recipeRepository): Response
     {
-        return $this->render('api/v1/recipe/index.html.twig', [
-            'controller_name' => 'RecipeController',
+        $recipes = $recipeRepository->findAll();
+
+        return $this->json($recipes, 200, [], [
+            'groups' => ['browse'],
         ]);
     }
 }
