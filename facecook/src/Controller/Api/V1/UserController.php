@@ -42,4 +42,26 @@ class UserController extends AbstractController
 
         return $this->json($form->getErrors(true, false)->__toString(), 400);
     }
+
+    /**
+     * @Route("/{id}", name="edit", methods={"PUT", "PATCH"}, requirements={"id": "\d+"})
+     */
+    public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    {
+        $form = $this->createForm(UserType::class, $user, ['csrf_protection' => false]);
+
+        $sentData = json_decode($request->getContent(), true);
+        $form->submit($sentData);
+
+        if ($form->isValid()) {
+            // Before submitting the new user, the password needs to be hashed. 
+            $password = $form->get('password')->getData();
+            $user->setPassword($passwordEncoder->encodePassword($user, $password));
+
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->json($user, 200, []);
+        }
+        return $this->json($form->getErrors(true, false)->__toString(), 400);
+    }
 }
