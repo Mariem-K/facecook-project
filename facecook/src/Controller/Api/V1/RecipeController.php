@@ -23,9 +23,15 @@ class RecipeController extends AbstractController
     {
         $recipes = $recipeRepository->findAll();
 
-        return $this->json($recipes, 200, [], [
-            'groups' => ['browse'],
-        ]);
+        return $this->json($recipes, 200, []);
+    }
+
+    /**
+     * @Route("/{id}", name="read", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function read(Recipe $recipe): Response
+    {
+        return $this->json($recipe, 200, []);
     }
 
     /**
@@ -50,5 +56,38 @@ class RecipeController extends AbstractController
         }
 
         return $this->json($form->getErrors(true, false)->__toString(), 400);
+    }
+
+    /**
+     * @Route("/{id}", name="edit", methods={"PUT", "PATCH"}, requirements={"id": "\d+"})
+     */
+    public function edit(Recipe $recipe, Request $request, RecipeSlugger $slugger): Response
+    {
+        $form = $this->createForm(RecipeType::class, $recipe, ['csrf_protection' => false]);
+
+        $sentData = json_decode($request->getContent(), true);
+        $form->submit($sentData);
+
+        if ($form->isValid()) {
+            $recipe->setSlug($slugger->slugify($recipe->getTitle()));
+
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->json($recipe, 200, []);
+        }
+
+        return $this->json($form->getErrors(true, false)->__toString(), 400);
+    }
+
+    /**
+     * @Route("/{id}", name="delete", methods={"DELETE"}, requirements={"id": "\d+"})
+     */
+    public function delete (Recipe $recipe): Response
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($recipe);
+        $em->flush();
+
+        return $this->json(null, 204);
     }
 }
