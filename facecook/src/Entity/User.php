@@ -49,6 +49,12 @@ class User implements UserInterface
      */
     private $status;
 
+    public function __construct()
+    {
+        $this->roles[] = "ROLE_USER";
+        $this->status = 1;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
