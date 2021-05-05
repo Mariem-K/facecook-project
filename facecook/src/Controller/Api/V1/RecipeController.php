@@ -22,10 +22,10 @@ class RecipeController extends AbstractController
      */
     public function browse(RecipeRepository $recipeRepository): Response
     {
-        // if there is a parameter sort which value is -created_at in the requested url, retrieve the last 5 created recipes
+        // if there is a parameter sort which value is -created_at in the requested url, retrieve the last 5 created public recipes
         // else retrieve all recipes
-        if (isset($_GET['sort']) && $_GET['sort'] == '-created_at') {
-            $recipes = $recipeRepository->findBy([], ['created_at' => 'DESC'], 5);
+        if (isset($_GET['sort']) && isset($_GET['status']) && $_GET['sort'] == '-created_at') {
+            $recipes = $recipeRepository->findBy(['status' => $_GET['status']], ['created_at' => 'DESC'], 5);
         } else {
             $recipes = $recipeRepository->findAll();
         }
