@@ -2,8 +2,9 @@
 
 namespace App\Controller\Api\V1;
 
-
+use App\Entity\Category;
 use App\Entity\Recipe;
+use App\Entity\User;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 use App\Service\RecipeSlugger;
@@ -56,6 +57,9 @@ class RecipeController extends AbstractController
 
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
+
+            // The recipe needs to be associated to a user.
+            $recipe->setUser($this->getUser());
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($recipe);
