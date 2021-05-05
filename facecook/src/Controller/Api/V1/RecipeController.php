@@ -2,19 +2,101 @@
 
 namespace App\Controller\Api\V1;
 
+
+use App\Entity\Recipe;
+use App\Form\RecipeType;
+use App\Repository\RecipeRepository;
+use App\Service\RecipeSlugger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/api/v1/recipes", name="api_v1_recipes_")
+ */
 class RecipeController extends AbstractController
 {
     /**
-     * @Route("/api/v1/recipe", name="api_v1_recipe")
+     * @Route("", name="browse", methods={"GET"})
      */
-    public function index(): Response
+    public function browse(RecipeRepository $recipeRepository): Response
     {
-        return $this->render('api/v1/recipe/index.html.twig', [
-            'controller_name' => 'RecipeController',
+        // if there is a parameter sort which value is -created_at in the requested url, retrieve the last 5 created public recipes
+        // else retrieve all recipes
+        if (isset($_GET['sort']) && isset($_GET['status']) && $_GET['sort'] == '-created_at') {
+            $recipes = $recipeRepository->findBy(['status' => $_GET['status']], ['created_at' => 'DESC'], 5);
+        } else {
+            $recipes = $recipeRepository->findAll();
+        }
+
+        return $this->json($recipes, 200, [], [
+            'groups' => ['browse'],
         ]);
+    }
+
+    /**
+     * @Route("/{id}", name="read", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function read(Recipe $recipe): Response
+    {
+        return $this->json($recipe, 200, []);
+    }
+
+    /**
+     * @Route("", name="add", methods={"POST"})
+     */
+    public function add(Request $request, RecipeSlugger $slugger): Response
+    {
+        $recipe = new Recipe();
+        $form = $this->createForm(RecipeType::class, $recipe, ['csrf_protection' => false]);
+
+        $sentData = json_decode($request->getContent(), true);
+        $form->submit($sentData);
+
+        if ($form->isValid()) {
+            $recipe->setSlug($slugger->slugify($recipe->getTitle()));
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($recipe);
+            $em->flush();
+
+            return $this->json($recipe, 201, []);
+        }
+
+        return $this->json($form->getErrors(true, false)->__toString(), 400);
+    }
+
+    /**
+     * @Route("/{id}", name="edit", methods={"PUT", "PATCH"}, requirements={"id": "\d+"})
+     */
+    public function edit(Recipe $recipe, Request $request, RecipeSlugger $slugger): Response
+    {
+        $form = $this->createForm(RecipeType::class, $recipe, ['csrf_protection' => false]);
+
+        $sentData = json_decode($request->getContent(), true);
+        $form->submit($sentData);
+
+        if ($form->isValid()) {
+            $recipe->setSlug($slugger->slugify($recipe->getTitle()));
+
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->json($recipe, 200, []);
+        }
+
+        return $this->json($form->getErrors(true, false)->__toString(), 400);
+    }
+
+    /**
+     * @Route("/{id}", name="delete", methods={"DELETE"}, requirements={"id": "\d+"})
+     */
+    public function delete (Recipe $recipe): Response
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($recipe);
+        $em->flush();
+
+        return $this->json(null, 204);
     }
 }

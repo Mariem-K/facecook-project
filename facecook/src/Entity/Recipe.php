@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\RecipeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=RecipeRepository::class)
@@ -14,44 +17,82 @@ class Recipe
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"browse"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"browse"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"browse"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"browse"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"browse"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"browse"})
      */
     private $updated_at;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"browse"})
      */
     private $slug;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"browse"})
      */
     private $status;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="recipes")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $category;
+
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="recipes")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $instructions;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $ingredients;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTime();
+        $this->status = 1;
+    }
+
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -137,6 +178,54 @@ class Recipe
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getInstructions(): ?string
+    {
+        return $this->instructions;
+    }
+
+    public function setInstructions(string $instructions): self
+    {
+        $this->instructions = $instructions;
+
+        return $this;
+    }
+
+    public function getIngredients(): ?string
+    {
+        return $this->ingredients;
+    }
+
+    public function setIngredients(string $ingredients): self
+    {
+        $this->ingredients = $ingredients;
 
         return $this;
     }
