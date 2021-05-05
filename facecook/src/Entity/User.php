@@ -51,6 +51,7 @@ class User implements UserInterface
      */
     private $status;
 
+
     /**
      * @ORM\OneToMany(targetEntity=Recipe::class, mappedBy="user")
      */
@@ -58,6 +59,8 @@ class User implements UserInterface
 
     public function __construct()
     {
+        $this->roles[] = "ROLE_USER";
+        $this->status = 1;
         $this->recipes = new ArrayCollection();
     }
 

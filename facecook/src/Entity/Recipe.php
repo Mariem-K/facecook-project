@@ -87,6 +87,8 @@ class Recipe
 
     public function __construct()
     {
+        $this->created_at = new \DateTime();
+        $this->status = 1;
         $this->instructions = new ArrayCollection();
         $this->compositions = new ArrayCollection();
     }
