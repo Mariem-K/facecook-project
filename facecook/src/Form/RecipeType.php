@@ -32,7 +32,7 @@ class RecipeType extends AbstractType
             ->add('category', null, [
                 'expanded' => true,
             ])
-            //->add('user')
+            ->add('user')
         ;
     }
 
