@@ -77,22 +77,22 @@ class Recipe
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity=Composition::class, mappedBy="recipe", orphanRemoval=true)
+     * @ORM\Column(type="text")
      */
-    private $compositions;
+    private $instructions;
 
     /**
      * @ORM\Column(type="text")
      */
-    private $instructions;
+    private $ingredients;
 
     public function __construct()
     {
         $this->created_at = new \DateTime();
         $this->status = 1;
-        $this->compositions = new ArrayCollection();
     }
 
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -206,36 +206,6 @@ class Recipe
         return $this;
     }
 
-    /**
-     * @return Collection|Composition[]
-     */
-    public function getCompositions(): Collection
-    {
-        return $this->compositions;
-    }
-
-    public function addComposition(Composition $composition): self
-    {
-        if (!$this->compositions->contains($composition)) {
-            $this->compositions[] = $composition;
-            $composition->setRecipe($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComposition(Composition $composition): self
-    {
-        if ($this->compositions->removeElement($composition)) {
-            // set the owning side to null (unless already changed)
-            if ($composition->getRecipe() === $this) {
-                $composition->setRecipe(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getInstructions(): ?string
     {
         return $this->instructions;
@@ -244,6 +214,18 @@ class Recipe
     public function setInstructions(string $instructions): self
     {
         $this->instructions = $instructions;
+
+        return $this;
+    }
+
+    public function getIngredients(): ?string
+    {
+        return $this->ingredients;
+    }
+
+    public function setIngredients(string $ingredients): self
+    {
+        $this->ingredients = $ingredients;
 
         return $this;
     }
