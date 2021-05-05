@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -49,10 +51,17 @@ class User implements UserInterface
      */
     private $status;
 
+
+    /**
+     * @ORM\OneToMany(targetEntity=Recipe::class, mappedBy="user")
+     */
+    private $recipes;
+
     public function __construct()
     {
         $this->roles[] = "ROLE_USER";
         $this->status = 1;
+        $this->recipes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -168,6 +177,36 @@ class User implements UserInterface
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Recipe[]
+     */
+    public function getRecipes(): Collection
+    {
+        return $this->recipes;
+    }
+
+    public function addRecipe(Recipe $recipe): self
+    {
+        if (!$this->recipes->contains($recipe)) {
+            $this->recipes[] = $recipe;
+            $recipe->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecipe(Recipe $recipe): self
+    {
+        if ($this->recipes->removeElement($recipe)) {
+            // set the owning side to null (unless already changed)
+            if ($recipe->getUser() === $this) {
+                $recipe->setUser(null);
+            }
+        }
 
         return $this;
     }

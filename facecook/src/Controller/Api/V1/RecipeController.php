@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api\V1;
 
+
 use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
@@ -23,7 +24,9 @@ class RecipeController extends AbstractController
     {
         $recipes = $recipeRepository->findAll();
 
-        return $this->json($recipes, 200, []);
+        return $this->json($recipes, 200, [], [
+            'groups' => ['browse'],
+        ]);
     }
 
     /**
