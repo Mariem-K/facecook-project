@@ -69,10 +69,6 @@ class Recipe
      */
     private $category;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Instruction::class, mappedBy="recipe", orphanRemoval=true)
-     */
-    private $instructions;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="recipes")
@@ -85,11 +81,15 @@ class Recipe
      */
     private $compositions;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $instructions;
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
         $this->status = 1;
-        $this->instructions = new ArrayCollection();
         $this->compositions = new ArrayCollection();
     }
 
@@ -194,36 +194,6 @@ class Recipe
         return $this;
     }
 
-    /**
-     * @return Collection|Instruction[]
-     */
-    public function getInstructions(): Collection
-    {
-        return $this->instructions;
-    }
-
-    public function addInstruction(Instruction $instruction): self
-    {
-        if (!$this->instructions->contains($instruction)) {
-            $this->instructions[] = $instruction;
-            $instruction->setRecipe($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInstruction(Instruction $instruction): self
-    {
-        if ($this->instructions->removeElement($instruction)) {
-            // set the owning side to null (unless already changed)
-            if ($instruction->getRecipe() === $this) {
-                $instruction->setRecipe(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getUser(): ?User
     {
         return $this->user;
@@ -262,6 +232,18 @@ class Recipe
                 $composition->setRecipe(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getInstructions(): ?string
+    {
+        return $this->instructions;
+    }
+
+    public function setInstructions(string $instructions): self
+    {
+        $this->instructions = $instructions;
 
         return $this;
     }

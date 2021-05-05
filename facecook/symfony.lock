@@ -138,7 +138,7 @@
     },
     "namshi/jose": {
         "version": "7.2.3"
-
+    },
     "myclabs/deep-copy": {
         "version": "1.10.2"
     },
