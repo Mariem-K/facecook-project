@@ -17,55 +17,56 @@ class Recipe
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $updated_at;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $slug;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="recipes")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"read"})
      */
     private $category;
 

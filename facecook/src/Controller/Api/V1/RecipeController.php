@@ -41,7 +41,9 @@ class RecipeController extends AbstractController
      */
     public function read(Recipe $recipe): Response
     {
-        return $this->json($recipe, 200, []);
+        return $this->json($recipe, 200, [], [
+            'groups' => ['read'],
+        ]);
     }
 
     /**
@@ -58,15 +60,15 @@ class RecipeController extends AbstractController
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
 
-            // The recipe needs to be associated to a user.
+            //! This line causes errors on Insomnia. The recipe needs to be associated to a user.
             //$recipe->setUser($this->getUser());
-
+            
             $em = $this->getDoctrine()->getManager();
             $em->persist($recipe);
             $em->flush();
 
             return $this->json($recipe, 201, [], [
-                'groups' => ['read', 'browse'],
+                'groups' => ['read'],
             ]);
         }
 
@@ -79,7 +81,7 @@ class RecipeController extends AbstractController
     public function edit(Recipe $recipe, Request $request, RecipeSlugger $slugger): Response
     {
         // We'll check if the user has the right to edit.
-        $this->denyAccessUnlessGranted('edit', $recipe);
+        //$this->denyAccessUnlessGranted('edit', $recipe);
 
         $form = $this->createForm(RecipeType::class, $recipe, ['csrf_protection' => false]);
 
@@ -89,10 +91,17 @@ class RecipeController extends AbstractController
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
 
+            // This updates the "updated at" property in the database. 
+            $recipe->setUpdatedAt(new \DateTime());
+
+            
+            // The recipe needs to be associated to a user.
+            //$recipe->setUser($this->getUser());
+
             $this->getDoctrine()->getManager()->flush();
 
             return $this->json($recipe, 200, [], [
-                'groups' => ['read', 'browse'],
+                'groups' => ['read'],
             ]);
         }
 
@@ -104,7 +113,7 @@ class RecipeController extends AbstractController
      */
     public function delete (Recipe $recipe): Response
     {
-        $this->denyAccessUnlessGranted('delete', $recipe);
+        //$this->denyAccessUnlessGranted('delete', $recipe);
 
         $em = $this->getDoctrine()->getManager();
         $em->remove($recipe);
