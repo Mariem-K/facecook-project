@@ -51,6 +51,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"browse", "read"})
      */
     private $status;
 
