@@ -66,7 +66,7 @@ class Recipe
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="recipes")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"read"})
+     * @Groups({"browse", "read"})
      */
     private $category;
 
@@ -80,11 +80,13 @@ class Recipe
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"read"})
      */
     private $instructions;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"read"})
      */
     private $ingredients;
 

@@ -23,12 +23,13 @@ class Category
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"browse"})
+     * @Groups({"browse", "read"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity=Recipe::class, mappedBy="category")
+     * @Groups({"browse", "read"})
      */
     private $recipes;
 

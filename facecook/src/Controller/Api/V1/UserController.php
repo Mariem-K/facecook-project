@@ -88,4 +88,20 @@ class UserController extends AbstractController
         }
         return $this->json($form->getErrors(true, false)->__toString(), 400);
     }
+
+    /**
+     * @Route("/{id}", name="delete", methods={"DELETE"}, requirements={"id": "\d+"})
+     */
+    public function delete (User $user): Response
+    {
+        //! Deleting a specific user is impossible with that method because of the foreign key in the recipe table 
+        //! This was expected behavior. 
+        //$this->denyAccessUnlessGranted('delete', $user);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($user);
+        $em->flush();
+
+        return $this->json(null, 204);
+    }
 }
