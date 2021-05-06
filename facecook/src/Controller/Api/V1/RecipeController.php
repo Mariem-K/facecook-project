@@ -22,14 +22,37 @@ class RecipeController extends AbstractController
      */
     public function browse(RecipeRepository $recipeRepository): Response
     {
-        // if there is a parameter sort which value is -created_at in the requested url, retrieve the last 5 created public recipes
-        // else retrieve all recipes
-        if (isset($_GET['sort']) && isset($_GET['status']) && $_GET['sort'] == '-created_at') {
-            $recipes = $recipeRepository->findBy(['status' => $_GET['status']], ['created_at' => 'DESC'], 5);
-        } else {
-            $recipes = $recipeRepository->findAll();
+        // initialization of the criteria of the request
+        $criteria = [];
+        // Looking if the parameters title or status exist and add them to the criteria
+        if (isset($_GET['title'])) {
+            $criteria = ['title' => $_GET['title']];
+        }
+        
+        if (isset($_GET['status'])) {
+            $criteria = ['status' => $_GET['status']];
         }
 
+        // initialization of the variable $orderBy
+        $orderBy = [];
+
+        // if the parameter sort exist, add it to the orderBy variable. 
+        // The first sign indicates if the sort is ASC (+) or DESC (-)
+        if (isset($_GET['sort'])) {
+            $sort = $_GET['sort'];
+            $order = substr($sort,0,1);
+            $order = $order === '-' ? 'DESC' : 'ASC';
+            $orderParameter = substr($sort, 1);
+            $orderBy = [$orderParameter => $order];
+        }
+        
+        // determination of the limit if the parameter exist
+        $limit = (isset($_GET['limit'])) ? $_GET['limit'] : null;
+
+        // Retrieve all the recipes with the criteria, sort and limit
+        $recipes = $recipeRepository->findBy($criteria, $orderBy, $limit);
+
+        dd($recipes);
         return $this->json($recipes, 200, [], [
             'groups' => ['browse'],
         ]);
