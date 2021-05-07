@@ -2,8 +2,9 @@
 
 namespace App\Controller\Api\V1;
 
-
+use App\Entity\Category;
 use App\Entity\Recipe;
+use App\Entity\User;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 use App\Service\RecipeSlugger;
@@ -52,9 +53,11 @@ class RecipeController extends AbstractController
         // Retrieve all the recipes with the criteria, sort and limit
         $recipes = $recipeRepository->findBy($criteria, $orderBy, $limit);
 
+
+
         dd($recipes);
         return $this->json($recipes, 200, [], [
-            'groups' => ['browse'],
+            'groups' => ['browse_recipes', 'browse_categories'],
         ]);
     }
 
@@ -63,7 +66,9 @@ class RecipeController extends AbstractController
      */
     public function read(Recipe $recipe): Response
     {
-        return $this->json($recipe, 200, []);
+        return $this->json($recipe, 200, [], [
+            'groups' => ['read_recipes', 'read_users', 'read_categories'],
+        ]);
     }
 
     /**
@@ -79,12 +84,14 @@ class RecipeController extends AbstractController
 
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
-
+            
             $em = $this->getDoctrine()->getManager();
             $em->persist($recipe);
             $em->flush();
 
-            return $this->json($recipe, 201, []);
+            return $this->json($recipe, 201, [], [
+                'groups' => ['read_recipes', 'read_users', 'read_categories'],
+            ]);
         }
 
         return $this->json($form->getErrors(true, false)->__toString(), 400);
@@ -95,6 +102,9 @@ class RecipeController extends AbstractController
      */
     public function edit(Recipe $recipe, Request $request, RecipeSlugger $slugger): Response
     {
+        // We'll check if the user has the right to edit.
+        //$this->denyAccessUnlessGranted('edit', $recipe);
+
         $form = $this->createForm(RecipeType::class, $recipe, ['csrf_protection' => false]);
 
         $sentData = json_decode($request->getContent(), true);
@@ -103,9 +113,14 @@ class RecipeController extends AbstractController
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
 
+            // This updates the "updated at" property in the database. 
+            $recipe->setUpdatedAt(new \DateTime());
+
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->json($recipe, 200, []);
+            return $this->json($recipe, 200, [], [
+                'groups' => ['read_recipes', 'read_users', 'read_categories'],
+            ]);
         }
 
         return $this->json($form->getErrors(true, false)->__toString(), 400);
@@ -116,6 +131,8 @@ class RecipeController extends AbstractController
      */
     public function delete (Recipe $recipe): Response
     {
+        //$this->denyAccessUnlessGranted('delete', $recipe);
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($recipe);
         $em->flush();
