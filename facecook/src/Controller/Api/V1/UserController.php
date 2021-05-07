@@ -21,9 +21,9 @@ class UserController extends AbstractController
      */
     public function browse(UserRepository $userRepository): Response
     {
-        $users = $userRepository->findOneByPublicStatus();
+        $users = $userRepository->findUsersByPublicStatus(2);
         return $this->json($users, 200, [], [
-            'groups' => ['browse'],
+            'groups' => ['browse_users'],
         ]);
     }
 
@@ -33,7 +33,7 @@ class UserController extends AbstractController
     public function read(User $user): Response
     {
         return $this->json($user, 200, [], [
-            'groups' => ['read'],
+            'groups' => ['read_users'],
         ]);
     }
 
@@ -83,7 +83,7 @@ class UserController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
 
             return $this->json($user, 200, [], [
-                'groups' => ['read'],
+                'groups' => ['read_users'],
             ]);
         }
         return $this->json($form->getErrors(true, false)->__toString(), 400);

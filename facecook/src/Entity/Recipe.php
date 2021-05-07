@@ -17,56 +17,56 @@ class Recipe
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $updated_at;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $slug;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="recipes")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_recipes", "read_recipes"})
      */
     private $category;
 
@@ -74,19 +74,19 @@ class Recipe
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="recipes")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"read"})
+     * @Groups({"read_recipes"})
      */
     private $user;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"read"})
+     * @Groups({"read_recipes"})
      */
     private $instructions;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"read"})
+     * @Groups({"read_recipes"})
      */
     private $ingredients;
 

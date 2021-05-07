@@ -17,19 +17,18 @@ class Category
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"browse"})
+     * @Groups({"browse_categories", "read_categories"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_categories", "read_categories"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity=Recipe::class, mappedBy="category")
-     * @Groups({"browse", "read"})
      */
     private $recipes;
 

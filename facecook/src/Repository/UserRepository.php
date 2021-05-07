@@ -39,12 +39,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Test of handmade function to return users only with status 2 (public status)
      */
-    public function findOneByPublicStatus(?int $status = null)
+    public function findUsersByPublicStatus(?int $status = null)
     {
         return $this->createQueryBuilder('u')
-        ->where('u.status = ?2')
+        ->where('u.status = :status')
         ->setParameter('status', $status)
         ->getQuery()
+        ->getResult()
         ;
     }
 

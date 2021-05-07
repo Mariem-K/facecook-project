@@ -39,19 +39,19 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_users", "read_users"})
      */
     private $pseudonym;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_users", "read_users"})
      */
     private $avatar;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"browse", "read"})
+     * @Groups({"browse_users", "read_users"})
      */
     private $status;
 
