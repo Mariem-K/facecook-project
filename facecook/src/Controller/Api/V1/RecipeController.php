@@ -75,6 +75,9 @@ class RecipeController extends AbstractController
     public function add(Request $request, RecipeSlugger $slugger): Response
     {
         $recipe = new Recipe();
+        
+        //dd($this->getUser());
+
         $form = $this->createForm(RecipeType::class, $recipe, ['csrf_protection' => false]);
 
         $sentData = json_decode($request->getContent(), true);
@@ -82,6 +85,7 @@ class RecipeController extends AbstractController
 
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
+            $recipe->setUser($this->getUser());
             
             $em = $this->getDoctrine()->getManager();
             $em->persist($recipe);
