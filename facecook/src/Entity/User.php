@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -38,16 +39,19 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"browse_users", "read_users"})
      */
     private $pseudonym;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"browse_users", "read_users"})
      */
     private $avatar;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"browse_users", "read_users"})
      */
     private $status;
 

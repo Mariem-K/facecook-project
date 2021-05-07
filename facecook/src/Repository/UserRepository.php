@@ -36,6 +36,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+    /**
+     * Test of handmade function to return users only with status 2 (public status)
+     */
+    public function findUsersByPublicStatus(?int $status = null)
+    {
+        return $this->createQueryBuilder('u')
+        ->where('u.status = :status')
+        ->setParameter('status', $status)
+        ->getQuery()
+        ->getResult()
+        ;
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */
