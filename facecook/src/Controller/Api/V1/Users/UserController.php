@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api\V1;
+namespace App\Controller\Api\V1\Users;
 
 use App\Entity\User;
 use App\Form\UserType;
@@ -70,6 +70,9 @@ class UserController extends AbstractController
      */
     public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
+        // We'll check if the user has the right to edit.
+        $this->denyAccessUnlessGranted('edit', $user);
+
         $form = $this->createForm(UserType::class, $user, ['csrf_protection' => false]);
 
         $sentData = json_decode($request->getContent(), true);

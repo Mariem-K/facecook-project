@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api\V1;
+namespace App\Controller\Api\V1\Users;
 
 use App\Entity\Category;
 use App\Entity\Recipe;
@@ -105,7 +105,7 @@ class RecipeController extends AbstractController
     public function edit(Recipe $recipe, Request $request, RecipeSlugger $slugger): Response
     {
         // We'll check if the user has the right to edit.
-        //$this->denyAccessUnlessGranted('edit', $recipe);
+        $this->denyAccessUnlessGranted('edit', $recipe);
 
         $form = $this->createForm(RecipeType::class, $recipe, ['csrf_protection' => false]);
 
@@ -133,7 +133,7 @@ class RecipeController extends AbstractController
      */
     public function delete (Recipe $recipe): Response
     {
-        //$this->denyAccessUnlessGranted('delete', $recipe);
+        $this->denyAccessUnlessGranted('delete', $recipe);
 
         $em = $this->getDoctrine()->getManager();
         $em->remove($recipe);
