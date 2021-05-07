@@ -54,8 +54,6 @@ class RecipeController extends AbstractController
         $recipes = $recipeRepository->findBy($criteria, $orderBy, $limit);
 
 
-
-        dd($recipes);
         return $this->json($recipes, 200, [], [
             'groups' => ['browse_recipes', 'browse_categories'],
         ]);
