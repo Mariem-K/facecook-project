@@ -53,9 +53,6 @@ class RecipeController extends AbstractController
         // Retrieve all the recipes with the criteria, sort and limit
         $recipes = $recipeRepository->findBy($criteria, $orderBy, $limit);
 
-
-
-        dd($recipes);
         return $this->json($recipes, 200, [], [
             'groups' => ['browse_recipes', 'browse_categories'],
         ]);
