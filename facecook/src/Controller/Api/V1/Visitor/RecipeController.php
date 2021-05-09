@@ -51,6 +51,7 @@ class RecipeController extends AbstractController
      */
     public function read(Recipe $recipe): Response
     {
+        // we check if the recipe is public, else it's forbidden
         if ($recipe->getStatus() == 2) {
             return $this->json($recipe, 200, [], [
                 'groups' => ['read_recipes', 'read_users', 'read_categories'],
