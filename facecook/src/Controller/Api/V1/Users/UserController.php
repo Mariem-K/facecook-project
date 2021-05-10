@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
- * @Route("/api/v1/users", name="api_v1_users_")
+ * @Route("/api/v1/private/users", name="api_v1_private_users_")
  */
 class UserController extends AbstractController
 {

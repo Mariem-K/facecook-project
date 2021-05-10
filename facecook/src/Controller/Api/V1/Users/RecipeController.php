@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api/v1/recipes", name="api_v1_recipes_")
+ * @Route("/api/v1/private/recipes", name="api_v1_private_recipes_")
  */
 class RecipeController extends AbstractController
 {
@@ -52,6 +52,8 @@ class RecipeController extends AbstractController
 
         // Retrieve all the recipes with the criteria, sort and limit
         $recipes = $recipeRepository->findBy($criteria, $orderBy, $limit);
+
+        $recipes = $recipeRepository->findRecipesOfUser(1);
 
 
         return $this->json($recipes, 200, [], [

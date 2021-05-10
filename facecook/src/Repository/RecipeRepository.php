@@ -19,6 +19,19 @@ class RecipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Recipe::class);
     }
 
+    /**
+     * Handmade function to return recipes of the user who is connected
+     */
+    public function findRecipesOfUser(?int $user = null)
+    {
+        return $this->createQueryBuilder('r')
+        ->where('r.user = :user')
+        ->setParameter('user', $user)
+        ->getQuery()
+        ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Recipe[] Returns an array of Recipe objects
     //  */
