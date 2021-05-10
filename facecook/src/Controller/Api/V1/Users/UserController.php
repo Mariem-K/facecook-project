@@ -68,10 +68,11 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}", name="edit", methods={"PUT", "PATCH"}, requirements={"id": "\d+"})
      */
-    public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository): Response
     {
+        //dd($this->getUser());
         // We'll check if the user has the right to edit.
-        $this->denyAccessUnlessGranted('edit', $user);
+        //$this->denyAccessUnlessGranted('edit', $user);
 
         $form = $this->createForm(UserType::class, $user, ['csrf_protection' => false]);
 
@@ -82,6 +83,13 @@ class UserController extends AbstractController
             // Before submitting the new user, the password needs to be hashed. 
             $password = $form->get('password')->getData();
             $user->setPassword($passwordEncoder->encodePassword($user, $password));
+
+            // retrieve the user 2
+            $friend = $userRepository->find(2);
+
+            // add the user 2 as friend
+            $user->addMyfriend($friend);
+
             
             $this->getDoctrine()->getManager()->flush();
 
