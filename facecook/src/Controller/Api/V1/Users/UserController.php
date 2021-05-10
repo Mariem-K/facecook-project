@@ -70,13 +70,16 @@ class UserController extends AbstractController
      */
     public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository): Response
     {
-        //dd($this->getUser());
         // We'll check if the user has the right to edit.
         //$this->denyAccessUnlessGranted('edit', $user);
 
         $form = $this->createForm(UserType::class, $user, ['csrf_protection' => false]);
 
         $sentData = json_decode($request->getContent(), true);
+
+        // retrieve the friend's id
+        $friendId = (isset($sentData['friend'])) ? $sentData['friend'] : null;
+
         $form->submit($sentData);
 
         if ($form->isValid()) {
@@ -84,11 +87,14 @@ class UserController extends AbstractController
             $password = $form->get('password')->getData();
             $user->setPassword($passwordEncoder->encodePassword($user, $password));
 
-            // retrieve the user 2
-            $friend = $userRepository->find(2);
+            if ($friendId !== null) {
 
-            // add the user 2 as friend
-            $user->addMyfriend($friend);
+                // retrieve the friend with its id
+                $friend = $userRepository->find($friendId);
+                
+                // add the friend to the user
+                $user->addMyfriend($friend);
+            }
 
             
             $this->getDoctrine()->getManager()->flush();
