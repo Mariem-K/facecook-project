@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api\V1\Users;
+namespace App\Controller\Api\V1;
 
 use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
