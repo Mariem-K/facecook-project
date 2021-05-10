@@ -18,7 +18,9 @@ class RecipeType extends AbstractType
         $builder
             ->add('title', TextType::class)
             ->add('description', TextType::class)
-            ->add('image', FileType::class)
+            ->add('image', FileType::class, [
+                'mapped' => false,
+            ])
             ->add('status', ChoiceType::class, [
                 'expanded' => true,
                 'choices' => [

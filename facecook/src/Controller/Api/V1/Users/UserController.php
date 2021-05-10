@@ -5,6 +5,7 @@ namespace App\Controller\Api\V1\Users;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\ImageUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +41,7 @@ class UserController extends AbstractController
     /**
      * @Route("", name="add", methods={"POST"})
      */
-    public function add(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function add(Request $request, ImageUploader $imageUploader, UserPasswordEncoderInterface $passwordEncoder): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user, ['csrf_protection' => false]);
@@ -49,6 +50,11 @@ class UserController extends AbstractController
         $form->submit($sentData);
 
         if ($form->isValid()) {
+            // If an image is sent, it's dealt with here
+            $avatar = $form->get('avatar')->getData();
+
+            $newFileName = $imageUploader->uploadUserAvatar($avatar);
+            $user->setAvatar($newFileName);
 
             // Before submitting the new user, the password needs to be hashed. 
             $password = $form->get('password')->getData();

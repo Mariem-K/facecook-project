@@ -7,6 +7,7 @@ use App\Entity\Recipe;
 use App\Entity\User;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
+use App\Service\ImageUploader;
 use App\Service\RecipeSlugger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,7 +68,7 @@ class RecipeController extends AbstractController
     /**
      * @Route("", name="add", methods={"POST"})
      */
-    public function add(Request $request, RecipeSlugger $slugger): Response
+    public function add(Request $request, RecipeSlugger $slugger, ImageUploader $imageUploader): Response
     {
         $recipe = new Recipe();
 
@@ -81,6 +82,16 @@ class RecipeController extends AbstractController
 
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
+
+            // If an image is sent, it's dealt with here
+            $image = $form->get('image')->getData();
+
+            if ($image) {
+                $newFileName = $imageUploader->uploadRecipePictures($image);
+                $recipe->setImage($newFileName);
+            }
+
+            // The user connected is associated with the recipe
             $recipe->setUser($this->getUser());
             
             $em = $this->getDoctrine()->getManager();
@@ -111,6 +122,8 @@ class RecipeController extends AbstractController
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
 
+            // The user connected is associated with the recipe
+            $recipe->setUser($this->getUser());
             // This updates the "updated at" property in the database. 
             $recipe->setUpdatedAt(new \DateTime());
 

@@ -20,7 +20,9 @@ class UserType extends AbstractType
             ->add('email', EmailType::class)
             ->add('password', PasswordType::class)
             ->add('pseudonym', TextType::class)
-            ->add('avatar', FileType::class)
+            ->add('avatar', FileType::class, [
+                'mapped' => false,
+            ])
             ->add('status', ChoiceType::class, [
                 'expanded' => true,
                 'choices' => [
