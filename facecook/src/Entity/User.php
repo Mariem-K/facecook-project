@@ -61,11 +61,28 @@ class User implements UserInterface
      */
     private $recipes;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="friendsWithMe")
+     * @ORM\JoinTable(name="friends",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="friend_user_id", referencedColumnName="id")}
+     *      )
+     * @Groups({"read_users"})
+     */
+    private $myfriends;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="myfriends")
+     */
+    private $friendsWithMe;
+
     public function __construct()
     {
         $this->roles[] = "ROLE_USER";
         $this->status = 1;
         $this->recipes = new ArrayCollection();
+        $this->myfriends = new ArrayCollection();
+        $this->friendsWithMe = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -210,6 +227,57 @@ class User implements UserInterface
             if ($recipe->getUser() === $this) {
                 $recipe->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getMyfriends(): Collection
+    {
+        return $this->myfriends;
+    }
+
+    public function addMyfriend(self $myfriend): self
+    {
+        if (!$this->myfriends->contains($myfriend)) {
+            $this->myfriends[] = $myfriend;
+        }
+
+        return $this;
+    }
+
+    public function removeMyfriend(self $myfriend): self
+    {
+        $this->myfriends->removeElement($myfriend);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getFriendsWithMe(): Collection
+    {
+        return $this->friendsWithMe;
+    }
+
+    public function addFriendsWithMe(self $friendsWithMe): self
+    {
+        if (!$this->friendsWithMe->contains($friendsWithMe)) {
+            $this->friendsWithMe[] = $friendsWithMe;
+            $friendsWithMe->addMyfriend($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFriendsWithMe(self $friendsWithMe): self
+    {
+        if ($this->friendsWithMe->removeElement($friendsWithMe)) {
+            $friendsWithMe->removeMyfriend($this);
         }
 
         return $this;
