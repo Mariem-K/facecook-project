@@ -53,7 +53,8 @@ class RecipeController extends AbstractController
         // Retrieve all the recipes with the criteria, sort and limit
         $recipes = $recipeRepository->findBy($criteria, $orderBy, $limit);
 
-        $recipes = $recipeRepository->findRecipesOfUser(1);
+        // Retrieves the recipes of the user who is connected
+        $recipes = $recipeRepository->findBy(['user' => $this->getUser()]);
 
 
         return $this->json($recipes, 200, [], [
