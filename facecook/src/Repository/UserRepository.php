@@ -37,7 +37,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * Test of handmade function to return users only with status 2 (public status)
+     * Handmade function to return users only with status 2 (public status)
      */
     public function findUsersByPublicStatus(?int $status = null)
     {
