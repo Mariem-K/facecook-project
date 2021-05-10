@@ -23,17 +23,6 @@ class RecipeController extends AbstractController
      */
     public function browse(RecipeRepository $recipeRepository): Response
     {
-        // initialization of the criteria of the request
-        $criteria = [];
-        // Looking if the parameters title or status exist and add them to the criteria
-        if (isset($_GET['title'])) {
-            $criteria = ['title' => $_GET['title']];
-        }
-        
-        if (isset($_GET['status'])) {
-            $criteria = ['status' => $_GET['status']];
-        }
-
         // initialization of the variable $orderBy
         $orderBy = [];
 
@@ -50,12 +39,8 @@ class RecipeController extends AbstractController
         // determination of the limit if the parameter exist
         $limit = (isset($_GET['limit'])) ? $_GET['limit'] : null;
 
-        // Retrieve all the recipes with the criteria, sort and limit
-        $recipes = $recipeRepository->findBy($criteria, $orderBy, $limit);
-
         // Retrieves the recipes of the user who is connected
-        $recipes = $recipeRepository->findBy(['user' => $this->getUser()]);
-
+        $recipes = $recipeRepository->findBy(['user' => $this->getUser()], $orderBy, $limit);
 
         return $this->json($recipes, 200, [], [
             'groups' => ['browse_recipes', 'browse_categories'],
@@ -67,9 +52,16 @@ class RecipeController extends AbstractController
      */
     public function read(Recipe $recipe): Response
     {
-        return $this->json($recipe, 200, [], [
-            'groups' => ['read_recipes', 'read_users', 'read_categories'],
-        ]);
+        // we check if the user has the right to access this recipe
+        if ($recipe->getUser() == $this->getUser()) {
+            
+            return $this->json($recipe, 200, [], [
+                'groups' => ['read_recipes', 'read_users', 'read_categories'],
+            ]);
+        } else {
+            $error = 'Denied access';
+            return $this->json($error, 403);
+        }
     }
 
     /**
@@ -78,9 +70,10 @@ class RecipeController extends AbstractController
     public function add(Request $request, RecipeSlugger $slugger): Response
     {
         $recipe = new Recipe();
-        
-        //dd($this->getUser());
 
+        // We'll check if the user has the right to add
+        $this->denyAccessUnlessGranted('add', $recipe);
+        
         $form = $this->createForm(RecipeType::class, $recipe, ['csrf_protection' => false]);
 
         $sentData = json_decode($request->getContent(), true);

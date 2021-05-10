@@ -12,7 +12,7 @@ class RecipeVoter extends Voter
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, ['edit', 'delete'])
+        return in_array($attribute, ['edit', 'delete', 'add'])
             && $subject instanceof \App\Entity\Recipe;
     }
 
@@ -31,6 +31,12 @@ class RecipeVoter extends Voter
                 // logic to determine if the user can VIEW
                 // return true or false
                 if ($subject->getUser() === $user) {
+                    return true;
+                }
+                break;
+            case 'add':
+                // logic to determine if the user exists and can add a recipe
+                if (isset($user)) {
                     return true;
                 }
                 break;
