@@ -68,15 +68,17 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/avatar/edit", name="edit_avatar", methods={"POST"})
+     * @Route("/{id}/avatar", name="edit_avatar", methods={"POST"})
      */
-    public function editAvatar(User $user, Request $request, ImageUploader $imageUploader): Response
+    public function uploadAvatar(User $user, Request $request, ImageUploader $imageUploader): Response
     {
         // a method which deals with the user's avatar only
         $user = new User();
         $form = $this->createForm(UserAvatarType::class, $user, ['csrf_protection' => false]);
 
         $form->handleRequest($request);
+
+        dd($form);
 
         if ($form->isValid()) {
             // If an image is sent, it's dealt with here
