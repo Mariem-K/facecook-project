@@ -18,6 +18,8 @@
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
-
+## on ignore les dossier des images
+/public/images/avatars/*.jpg
+/public/images/avatars/*.png
 /public/images/recipes/*.jpg
 /public/images/recipes/*.png

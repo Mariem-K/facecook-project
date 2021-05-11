@@ -85,6 +85,8 @@ class RecipeController extends AbstractController
 
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
+
+            // The user connected is associated with the recipe
             $recipe->setUser($this->getUser());
             
             $em = $this->getDoctrine()->getManager();
@@ -160,6 +162,8 @@ class RecipeController extends AbstractController
         if ($form->isValid()) {
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
 
+            // The user connected is associated with the recipe
+            $recipe->setUser($this->getUser());
             // This updates the "updated at" property in the database. 
             $recipe->setUpdatedAt(new \DateTime());
 

@@ -3,13 +3,18 @@
 namespace App\Controller\Api\V1\Users;
 
 use App\Entity\User;
+use App\Form\UserAvatarType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\ImageUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 /**
  * @Route("/api/v1/private/users", name="api_v1_private_users_")
@@ -63,6 +68,48 @@ class UserController extends AbstractController
         }
 
         return $this->json($form->getErrors(true, false)->__toString(), 400);
+    }
+
+    /**
+     * @Route("/{id}/avatar", name="edit_avatar", methods={"POST"})
+     */
+    public function uploadAvatar(User $user, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator): Response
+    {
+        // We'll check if the user has the right to edit.
+        //$this->denyAccessUnlessGranted('edit', $user);
+        // retrieving the avatar in the request
+        $avatar = $request->files->get('avatar');
+
+        // validation of the file, adding constraints
+        $violations = $validator->validate(
+            $avatar,
+            [
+                new File([
+                    'maxSize' => '2M',
+                    'mimeTypes' => ['image/*']
+                ])
+            ]
+        );
+
+        // If there ara violations, return error 400
+        if ($violations->count() > 0) {
+            return $this->json($violations, 400);
+        }
+
+        // The uploaded file is valid
+        // The filename is changed and the file goes in the directory set in .env
+        $newFileName = $imageUploader->uploadUserAvatar($avatar);
+        $user->setAvatar($newFileName);
+
+        // Persist the recipe in the database
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+
+        return $this->json($user, 200, [], [
+            'groups' => ['browse_users', 'read_users'],
+        ]);
     }
 
     /**
