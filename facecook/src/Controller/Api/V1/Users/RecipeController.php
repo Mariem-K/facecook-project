@@ -121,7 +121,7 @@ class RecipeController extends AbstractController
             ]
         );
 
-        // If there ara violations, return error 400
+        // If there are violations, return error 400
         if ($violations->count() > 0) {
             return $this->json($violations, 400);
         }
@@ -130,6 +130,7 @@ class RecipeController extends AbstractController
         // The filename is changed and the file goes in the directory set in .env
         $newFileName = $imageUploader->uploadRecipePictures($image);
         $recipe->setImage($newFileName);
+        $recipe->setUpdatedAt(new \DateTime());
 
         // Persist the recipe in the database
         $entityManager = $this->getDoctrine()->getManager();
