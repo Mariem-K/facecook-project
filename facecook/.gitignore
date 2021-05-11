@@ -21,3 +21,5 @@
 ## on ignore les dossier des images
 /public/images/avatars/*.jpg
 /public/images/avatars/*.png
+/public/images/recipes/*.jpg
+/public/images/recipes/*.png
