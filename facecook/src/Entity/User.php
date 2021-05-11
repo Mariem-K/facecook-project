@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -68,7 +69,6 @@ class User implements UserInterface
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="friend_user_id", referencedColumnName="id")}
      *      )
-     * @Groups({"read_users"})
      */
     private $myfriends;
 
@@ -241,6 +241,21 @@ class User implements UserInterface
         return $this->myfriends;
     }
 
+    /**
+     * @Groups({"read_users"})
+     */
+    public function getFriends()
+    {
+        $friends = [];
+        foreach($this->myfriends as $friend) {
+            $friends[] = [
+                'id' => $friend->getId(),
+                'pseudonym' => $friend->getPseudonym(),
+            ];
+        }
+
+        return $friends;
+    }
     public function addMyfriend(self $myfriend): self
     {
         if (!$this->myfriends->contains($myfriend)) {
