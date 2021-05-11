@@ -15,6 +15,7 @@ class UserAvatarType extends AbstractType
         $builder
             ->add('avatar', FileType::class, [
                 'mapped' => false,
+                'required' => false,
             ])
         ;
     }

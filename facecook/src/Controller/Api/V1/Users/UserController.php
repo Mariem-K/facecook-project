@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 /**
  * @Route("/api/v1/private/users", name="api_v1_private_users_")
@@ -70,31 +73,43 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}/avatar", name="edit_avatar", methods={"POST"})
      */
-    public function uploadAvatar(User $user, Request $request, ImageUploader $imageUploader): Response
+    public function uploadAvatar(User $user, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator): Response
     {
-        // a method which deals with the user's avatar only
-        $user = new User();
-        $form = $this->createForm(UserAvatarType::class, $user, ['csrf_protection' => false]);
+        // We'll check if the user has the right to edit.
+        //$this->denyAccessUnlessGranted('edit', $user);
+        // retrieving the avatar in the request
+        $avatar = $request->files->get('avatar');
 
-        $form->handleRequest($request);
+        // validation of the file, adding constraints
+        $violations = $validator->validate(
+            $avatar,
+            [
+                new File([
+                    'maxSize' => '2M',
+                    'mimeTypes' => ['image/*']
+                ])
+            ]
+        );
 
-        dd($form);
-
-        if ($form->isValid()) {
-            // If an image is sent, it's dealt with here
-            $avatar = $form->get('avatar')->getData();
-
-            $newFileName = $imageUploader->uploadUserAvatar($avatar);
-            $user->setAvatar($newFileName);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
-
-            return $this->json($user, 201, []);
+        // If there ara violations, return error 400
+        if ($violations->count() > 0) {
+            return $this->json($violations, 400);
         }
 
-        return $this->json($form->getErrors(true, false)->__toString(), 400);
+        // The uploaded file is valid
+        // The filename is changed and the file goes in the directory set in .env
+        $newFileName = $imageUploader->uploadUserAvatar($avatar);
+        $user->setAvatar($newFileName);
+
+        // Persist the recipe in the database
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+
+        return $this->json($user, 200, [], [
+            'groups' => ['browse_users', 'read_users'],
+        ]);
     }
 
     /**
