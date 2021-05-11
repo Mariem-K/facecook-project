@@ -5,13 +5,17 @@ namespace App\Controller\Api\V1\Users;
 use App\Entity\Category;
 use App\Entity\Recipe;
 use App\Entity\User;
+use App\Form\RecipeImageUploadType;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
+use App\Service\ImageUploader;
 use App\Service\RecipeSlugger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/api/v1/private/recipes", name="api_v1_private_recipes_")
@@ -93,6 +97,51 @@ class RecipeController extends AbstractController
         }
 
         return $this->json($form->getErrors(true, false)->__toString(), 400);
+    }
+
+    /**
+     * @Route("/{id}/image", name="edit_image", methods={"POST"}, requirements={"id": "\d+"})
+     */
+    public function uploadImage(Recipe $recipe, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator): Response
+    {
+        // We'll check if the user has the right to edit.
+        $this->denyAccessUnlessGranted('edit', $recipe);
+
+        // retrieving the image in the request
+        $image = $request->files->get('imageFile');
+
+        // validation of the file, adding constraints
+        $violations = $validator->validate(
+            $image,
+            [
+                new File([
+                    'maxSize' => '2M',
+                    'mimeTypes' => ['image/*']
+                ])
+            ]
+        );
+
+        // If there are violations, return error 400
+        if ($violations->count() > 0) {
+            return $this->json($violations, 400);
+        }
+
+        // The uploaded file is valid
+        // The filename is changed and the file goes in the directory set in .env
+        $newFileName = $imageUploader->uploadRecipePictures($image);
+        $recipe->setImage($newFileName);
+        $recipe->setUpdatedAt(new \DateTime());
+
+        // Persist the recipe in the database
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($recipe);
+        $entityManager->flush();
+
+
+        return $this->json($recipe, 200, [], [
+            'groups' => ['read_recipes', 'read_users', 'read_categories'],
+        ]);
+       
     }
 
     /**

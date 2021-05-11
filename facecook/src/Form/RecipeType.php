@@ -18,7 +18,6 @@ class RecipeType extends AbstractType
         $builder
             ->add('title', TextType::class)
             ->add('description', TextType::class)
-            ->add('image', FileType::class)
             ->add('status', ChoiceType::class, [
                 'expanded' => true,
                 'choices' => [
@@ -32,7 +31,6 @@ class RecipeType extends AbstractType
             ->add('category', null, [
                 'expanded' => true,
             ])
-            ->add('user')
         ;
     }
 
