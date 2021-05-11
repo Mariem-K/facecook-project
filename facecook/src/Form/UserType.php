@@ -27,6 +27,9 @@ class UserType extends AbstractType
                     'Public' => 2,
                 ],
             ])
+            ->add('friend', null, [
+                'mapped' => false,
+            ])
         ;
     }
 

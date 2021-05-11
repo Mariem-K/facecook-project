@@ -26,7 +26,8 @@ class UserController extends AbstractController
      */
     public function browse(UserRepository $userRepository): Response
     {
-        $users = $userRepository->findUsersByPublicStatus(2);
+        $users = $userRepository->findUsersByPublicStatus(2); 
+          
         return $this->json($users, 200, [], [
             'groups' => ['browse_users'],
         ]);
@@ -115,20 +116,34 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}", name="edit", methods={"PUT", "PATCH"}, requirements={"id": "\d+"})
      */
-    public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository): Response
     {
         // We'll check if the user has the right to edit.
-        $this->denyAccessUnlessGranted('edit', $user);
+        //$this->denyAccessUnlessGranted('edit', $user);
 
         $form = $this->createForm(UserType::class, $user, ['csrf_protection' => false]);
 
         $sentData = json_decode($request->getContent(), true);
+
+        // retrieve the friend's id
+        $friendId = (isset($sentData['friend'])) ? $sentData['friend'] : null;
+
         $form->submit($sentData);
 
         if ($form->isValid()) {
             // Before submitting the new user, the password needs to be hashed. 
             $password = $form->get('password')->getData();
             $user->setPassword($passwordEncoder->encodePassword($user, $password));
+
+            if ($friendId !== null) {
+
+                // retrieve the friend with its id
+                $friend = $userRepository->find($friendId);
+                
+                // add the friend to the user
+                $user->addMyfriend($friend);
+            }
+
             
             $this->getDoctrine()->getManager()->flush();
 
