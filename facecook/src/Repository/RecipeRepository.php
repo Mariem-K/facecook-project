@@ -24,8 +24,9 @@ class RecipeRepository extends ServiceEntityRepository
      */
     public function findVisibleByRecipes(?int $user = null)
     {
-        return $this->createQueryBuilder('recipe_user')
-            ->where('recipe_user = :user')
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.user = :user')
+            ->orWhere('r.visibleBy = :visibleBy')
             ->setParameter('user', $user)
             ->getQuery()
             ->getResult()
