@@ -76,7 +76,7 @@ class UserController extends AbstractController
     public function uploadAvatar(User $user, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator): Response
     {
         // We'll check if the user has the right to edit.
-        //$this->denyAccessUnlessGranted('edit', $user);
+        $this->denyAccessUnlessGranted('edit', $user);
         // retrieving the avatar in the request
         $avatar = $request->files->get('avatar');
 
