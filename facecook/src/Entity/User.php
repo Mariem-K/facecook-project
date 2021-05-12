@@ -19,7 +19,7 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"browse_users", "read_users"})
+     * @Groups({"browse_recipes", "browse_users", "read_users"})
      */
     private $id;
 
@@ -41,7 +41,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"browse_users", "read_users"})
+     * @Groups({"browse_recipes", "browse_users", "read_users"})
      */
     private $pseudonym;
 
