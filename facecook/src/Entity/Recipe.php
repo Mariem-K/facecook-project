@@ -90,10 +90,16 @@ class Recipe
      */
     private $ingredients;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="visibleRecipes")
+     */
+    private $visibleBy;
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
         $this->status = 1;
+        $this->visibleBy = new ArrayCollection();
     }
 
     
@@ -230,6 +236,30 @@ class Recipe
     public function setIngredients(string $ingredients): self
     {
         $this->ingredients = $ingredients;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getVisibleBy(): Collection
+    {
+        return $this->visibleBy;
+    }
+
+    public function addVisibleBy(User $visibleBy): self
+    {
+        if (!$this->visibleBy->contains($visibleBy)) {
+            $this->visibleBy[] = $visibleBy;
+        }
+
+        return $this;
+    }
+
+    public function removeVisibleBy(User $visibleBy): self
+    {
+        $this->visibleBy->removeElement($visibleBy);
 
         return $this;
     }

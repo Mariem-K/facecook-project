@@ -77,6 +77,11 @@ class User implements UserInterface
      */
     private $friendsWithMe;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Recipe::class, mappedBy="visibleBy")
+     */
+    private $visibleRecipes;
+
     public function __construct()
     {
         $this->roles[] = "ROLE_USER";
@@ -84,6 +89,7 @@ class User implements UserInterface
         $this->recipes = new ArrayCollection();
         $this->myfriends = new ArrayCollection();
         $this->friendsWithMe = new ArrayCollection();
+        $this->visibleRecipes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -294,6 +300,33 @@ class User implements UserInterface
     {
         if ($this->friendsWithMe->removeElement($friendsWithMe)) {
             $friendsWithMe->removeMyfriend($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Recipe[]
+     */
+    public function getVisibleRecipes(): Collection
+    {
+        return $this->visibleRecipes;
+    }
+
+    public function addVisibleRecipe(Recipe $visibleRecipe): self
+    {
+        if (!$this->visibleRecipes->contains($visibleRecipe)) {
+            $this->visibleRecipes[] = $visibleRecipe;
+            $visibleRecipe->addVisibleBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVisibleRecipe(Recipe $visibleRecipe): self
+    {
+        if ($this->visibleRecipes->removeElement($visibleRecipe)) {
+            $visibleRecipe->removeVisibleBy($this);
         }
 
         return $this;
