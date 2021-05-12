@@ -6,6 +6,7 @@ use App\Entity\User;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
@@ -27,7 +28,7 @@ class UserType extends AbstractType
                     'Public' => 2,
                 ],
             ])
-            ->add('friend', null, [
+            ->add('friend', IntegerType::class, [
                 'mapped' => false,
             ])
         ;
