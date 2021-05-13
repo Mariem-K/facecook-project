@@ -92,15 +92,6 @@ class RecipeController extends AbstractController
 
             // The user connected is associated with the recipe
             $recipe->setUser($this->getUser());
-
-             // This add a user to visibleBy property
-             if (isset($sentData['visible']) && $recipe->getStatus() === 3) {
-                $userId = $sentData['visible'];
-                $user = $userRepository->find($userId);
-                if ($user !== null) {
-                    $recipe->addVisibleBy($userRepository->find($userId));
-                }
-            }
             
             $em = $this->getDoctrine()->getManager();
             $em->persist($recipe);
@@ -180,15 +171,6 @@ class RecipeController extends AbstractController
 
             // This updates the "updated at" property in the database. 
             $recipe->setUpdatedAt(new \DateTime());
-
-            // This add a user to visibleBy property
-            if (isset($sentData['visible']) && $recipe->getStatus() === 3) {
-                $userId = $sentData['visible'];
-                $user = $userRepository->find($userId);
-                if ($user !== null) {
-                    $recipe->addVisibleBy($userRepository->find($userId));
-                }
-            }
 
             $this->getDoctrine()->getManager()->flush();
 

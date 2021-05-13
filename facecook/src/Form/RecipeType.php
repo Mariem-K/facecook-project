@@ -33,9 +33,7 @@ class RecipeType extends AbstractType
             ->add('category', null, [
                 'expanded' => true,
             ])
-            ->add('visible',IntegerType::class, [
-                'mapped' => false
-            ]) 
+            ->add('visibleBy')
         ;
     }
 
