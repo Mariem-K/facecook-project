@@ -92,6 +92,11 @@ class User implements UserInterface
         $this->visibleRecipes = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return $this->pseudonym;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -311,6 +316,22 @@ class User implements UserInterface
     public function getVisibleRecipes(): Collection
     {
         return $this->visibleRecipes;
+    }
+
+    /**
+     * @Groups({"read_users"})
+     */
+    public function getMyVisibleRecipes()
+    {
+        $myVisibleRecipes = [];
+        foreach ($this->visibleRecipes as $visibleRecipe) {
+            $myVisibleRecipes[] = [
+                'id' => $visibleRecipe->getId(),
+                'title' => $visibleRecipe->getTitle(),
+            ];
+        }
+
+        return $myVisibleRecipes;
     }
 
     public function addVisibleRecipe(Recipe $visibleRecipe): self
