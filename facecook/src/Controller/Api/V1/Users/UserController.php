@@ -150,8 +150,9 @@ class UserController extends AbstractController
         $this->denyAccessUnlessGranted('edit', $user);
 
         // retrieving the friend in the request
-        $friend =json_decode($request->getContent(), true);
-        $friendId = $friend['friend'];
+        $sentData =json_decode($request->getContent(), true);
+        $friendId = (isset($sentData['friend'])) ? $sentData['friend'] : null;
+        $friendToRemoveFromList = (isset($sentData['friendToRemove'])) ? $sentData['friendToRemove'] : null;
 
         // If there is an id and that id is not the id of the connected user
         if ($friendId !== null && $friendId !== $this->getUser()->getId()) {
@@ -169,10 +170,36 @@ class UserController extends AbstractController
             return $this->json($user, 200, [], [
                 'groups' => ['read_users'],
             ]);
+        } elseif ($friendToRemoveFromList !== null) {
+            // retrieves friend to remove with id
+            $friendToRemove = $userRepository->find($friendToRemoveFromList);
+
+            // verifies if the $friendToRemove is different from null
+            if ($friendToRemove !== null) {
+                // if it is, removes friend
+                $user->removeMyfriend($friendToRemove);
+
+                // get the visible recipes from friend (the recipes friend has the right to see)
+                $friendToRemoveVisibleRecipes = $friendToRemove->getVisibleRecipes();
+
+                // then proceeds to remove the visibility right on them one by one
+                foreach ($friendToRemoveVisibleRecipes as $friendToRemoveVisibleRecipe) {
+                    // verifies the users of visible recipes
+                    // if user of visible recipes = user connected
+                    if ($friendToRemoveVisibleRecipe->getUser() == $user) {
+                        // proceeds to remove visibility right on recipes of user connected
+                        $friendToRemove->removeVisibleRecipe($friendToRemoveVisibleRecipe);
+                    }
+                }    
+            }  
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->json($user, 200, [], [
+                'groups' => ['read_users'],
+            ]);      
         } else {
             return $this->json('Bad request', 400);
         }
-
     }
 
     /**
@@ -183,9 +210,9 @@ class UserController extends AbstractController
         // We'll check if the user has the right to edit.
         $this->denyAccessUnlessGranted('edit', $user);
 
-        // retrieving the friend in the request
-        $friend =json_decode($request->getContent(), true);
-        $friendToRemoveFromList = $friend['friend'];
+        // retrieving the friendTo remove in the request
+        $sentData =json_decode($request->getContent(), true);
+        $friendToRemoveFromList = $sentData['friendToRemove'];
 
         if ($friendToRemoveFromList !== null) {
             // retrieves friend to remove with id
