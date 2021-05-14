@@ -31,6 +31,9 @@ class UserType extends AbstractType
             ->add('friend', IntegerType::class, [
                 'mapped' => false,
             ])
+            ->add('removeFriend', null, [
+                'mapped' => false,
+            ])
         ;
     }
 
