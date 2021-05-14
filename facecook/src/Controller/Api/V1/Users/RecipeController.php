@@ -43,15 +43,14 @@ class RecipeController extends AbstractController
         // determination of the limit if the parameter exist
         $limit = (isset($_GET['limit'])) ? $_GET['limit'] : null;
 
-        // Retrieves the recipes of the user who is connected
-        $recipes = $recipeRepository->findBy(['user' => $this->getUser()], $orderBy, $limit);
-        $user = $this->getUser();
-        $visibleRecipes = $user->getVisibleRecipes();
-
-        return $this->json([
-            'private recipes' => $recipes, 
-            'visible recipes' => $visibleRecipes], 200, [], [
-            'groups' => ['browse_recipes', 'browse_categories'],
+         // Retrieves the recipes of the user who is connected
+         $recipes = $recipeRepository->findBy(['user' => $this->getUser()], $orderBy, $limit);
+         $user = $this->getUser();
+         $visibleRecipes = $user->getVisibleRecipes();
+         return $this->json([
+             'private recipes' => $recipes, 
+             'visible recipes' => $visibleRecipes], 200, [], [
+             'groups' => ['browse_recipes', 'browse_categories'],
         ]);
     }
 

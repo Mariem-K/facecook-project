@@ -19,6 +19,20 @@ class RecipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Recipe::class);
     }
 
+    /**
+     * Function to return recipes which are visible by a user
+     */
+    public function findVisibleByRecipes(?int $user = null)
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.user = :user')
+            ->orWhere('r.visibleBy = :visibleBy')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Recipe[] Returns an array of Recipe objects
     //  */
