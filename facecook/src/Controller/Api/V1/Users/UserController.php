@@ -128,6 +128,9 @@ class UserController extends AbstractController
         // retrieve the friend's id
         $friendId = (isset($sentData['friend'])) ? $sentData['friend'] : null;
 
+        // retrieves friend's id to remove
+        $friendToRemoveFromList = (isset($sentData['removeFriend'])) ? $sentData['removeFriend'] : null;
+
         $form->submit($sentData);
 
         if ($form->isValid()) {
@@ -142,6 +145,14 @@ class UserController extends AbstractController
                 
                 // add the friend to the user
                 $user->addMyfriend($friend);
+            }
+
+            if ($friendToRemoveFromList !== null) {
+                // retrieves friend to remove with id
+                $friendToRemove = $userRepository->find($friendToRemoveFromList);
+
+                // removes friend
+                $user->removeMyfriend($friendToRemove);
             }
 
             

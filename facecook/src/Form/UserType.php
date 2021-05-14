@@ -30,6 +30,9 @@ class UserType extends AbstractType
             ->add('friend', null, [
                 'mapped' => false,
             ])
+            ->add('removeFriend', null, [
+                'mapped' => false,
+            ])
         ;
     }
 
