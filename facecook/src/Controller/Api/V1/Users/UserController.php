@@ -186,6 +186,40 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("/{id}/friend", name="edit_friend", methods={"POST"})
+     */
+    public function addFriend(User $user, Request $request, UserRepository $userRepository)
+    {
+        // We'll check if the user has the right to edit.
+        $this->denyAccessUnlessGranted('edit', $user);
+
+        // retrieving the friend in the request
+        $friend =json_decode($request->getContent(), true);
+        $friendId = $friend['friend'];
+
+        // If there is an id and that id is not the id of the connected user
+        if ($friendId !== null && $friendId !== $this->getUser()->getId()) {
+
+            // retrieve the friend with its id
+            $friend = $userRepository->find($friendId);
+
+            if ($friend !== null && $friend->getStatus() == 2) { 
+                // add the friend to the user only if the status of the friend is public
+                $user->addMyfriend($friend);
+            }
+
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->json($user, 200, [], [
+                'groups' => ['read_users'],
+            ]);
+        } else {
+            return $this->json('Bad request', 400);
+        }
+
+    }
+
+    /**
      * @Route("/{id}", name="delete", methods={"DELETE"}, requirements={"id": "\d+"})
      */
     public function delete (User $user): Response
