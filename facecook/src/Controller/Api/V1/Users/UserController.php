@@ -220,6 +220,52 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("/{id}/friend", name="edit_friend", methods={"DELETE"})
+     */
+    public function removeFriend(User $user, Request $request, UserRepository $userRepository)
+    {
+        // We'll check if the user has the right to edit.
+        $this->denyAccessUnlessGranted('edit', $user);
+
+        // retrieving the friend in the request
+        $friend =json_decode($request->getContent(), true);
+        $friendToRemoveFromList = $friend['friend'];
+
+        if ($friendToRemoveFromList !== null) {
+            // retrieves friend to remove with id
+            $friendToRemove = $userRepository->find($friendToRemoveFromList);
+
+            // verifies if the $friendToRemove is different from null
+            if ($friendToRemove !== null) {
+                // if it is, removes friend
+                $user->removeMyfriend($friendToRemove);
+
+                // get the visible recipes from friend (the recipes friend has the right to see)
+                $friendToRemoveVisibleRecipes = $friendToRemove->getVisibleRecipes();
+
+                // then proceeds to remove the visibility right on them one by one
+                foreach ($friendToRemoveVisibleRecipes as $friendToRemoveVisibleRecipe) 
+                {
+                    // verifies the users of visible recipes
+                    // if user of visible recipes = user connected
+                    if ($friendToRemoveVisibleRecipe->getUser() == $user) {
+                        // proceeds to remove visibility right on recipes of user connected
+                        $friendToRemove->removeVisibleRecipe($friendToRemoveVisibleRecipe);
+                    }
+                }
+            }
+
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->json($user, 200, [], [
+                'groups' => ['read_users'],
+            ]);
+        } else {
+            return $this->json('Bad request', 400);
+        }
+    }
+
+    /**
      * @Route("/{id}", name="delete", methods={"DELETE"}, requirements={"id": "\d+"})
      */
     public function delete (User $user): Response
