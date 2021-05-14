@@ -10,6 +10,7 @@ use App\Repository\RecipeRepository;
 use App\Repository\UserRepository;
 use App\Service\ImageUploader;
 use App\Service\RecipeSlugger;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,10 +47,16 @@ class RecipeController extends AbstractController
          // Retrieves the recipes of the user who is connected
          $recipes = $recipeRepository->findBy(['user' => $this->getUser()], $orderBy, $limit);
          $user = $this->getUser();
+
+         // Retrieves the visibles recipes
          $visibleRecipes = $user->getVisibleRecipes();
-         return $this->json([
-             'private recipes' => $recipes, 
-             'visible recipes' => $visibleRecipes], 200, [], [
+
+         // Merge the two collections of recipes
+         $recipesList = new ArrayCollection(
+             array_merge($recipes, $visibleRecipes->toArray())
+         );
+                 
+         return $this->json($recipesList, 200, [], [
              'groups' => ['browse_recipes', 'browse_categories'],
         ]);
     }

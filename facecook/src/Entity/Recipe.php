@@ -250,7 +250,10 @@ class Recipe
 
     public function addVisibleBy(User $visibleBy): self
     {
-        if (!$this->visibleBy->contains($visibleBy)) {
+        // we check if the user $visibleBy is not already in the property visibleBy
+        // and if the recipe's status is 3 (custom)
+        // and if the $visibleBy is a friend of the recipe's user
+        if (!$this->visibleBy->contains($visibleBy) && $this->status == 3 && $this->user->getMyfriends()->contains($visibleBy)) {
             $this->visibleBy[] = $visibleBy;
         }
 
