@@ -14,6 +14,9 @@ class AuthenticationSuccessSubscriber implements EventSubscriberInterface
         $data['user'] = array(
             'pseudonym' => $user->getPseudonym(),
             'id' => $user->getId(),
+            'status' => $user->getStatus(),
+            'avatar' => $user->getAvatar(),
+            'friends' => $user->getFriends(),
         );
 
         $event->setData($data);

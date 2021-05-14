@@ -262,6 +262,7 @@ class User implements UserInterface
             $friends[] = [
                 'id' => $friend->getId(),
                 'pseudonym' => $friend->getPseudonym(),
+                'avatar' => $friend->getAvatar(),
             ];
         }
 
