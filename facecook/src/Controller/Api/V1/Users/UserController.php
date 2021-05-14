@@ -151,10 +151,27 @@ class UserController extends AbstractController
                 // retrieves friend to remove with id
                 $friendToRemove = $userRepository->find($friendToRemoveFromList);
 
-                // removes friend
-                $user->removeMyfriend($friendToRemove);
-            }
+                // verifies if the $friendToRemove is different from null
+                if ($friendToRemove !== null) {
+                    // if it is, removes friend
+                    $user->removeMyfriend($friendToRemove);
 
+                    // get the visible recipes from friend (the recipes friend has the right to see)
+                    $friendToRemoveVisibleRecipes = $friendToRemove->getVisibleRecipes();
+
+                    // then proceeds to remove the visibility right on them one by one
+                    foreach ($friendToRemoveVisibleRecipes as $friendToRemoveVisibleRecipe) 
+                    {
+                        // verifies the users of visible recipes
+                        // if user of visible recipes = user connected
+                        if ($friendToRemoveVisibleRecipe->getUser() == $user) {
+                            // proceeds to remove visibility right on recipes of user connected
+                            $friendToRemove->removeVisibleRecipe($friendToRemoveVisibleRecipe);
+                        }
+                    }
+                }
+
+            }
             
             $this->getDoctrine()->getManager()->flush();
 
