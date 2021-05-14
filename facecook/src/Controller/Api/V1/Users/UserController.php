@@ -135,13 +135,16 @@ class UserController extends AbstractController
             $password = $form->get('password')->getData();
             $user->setPassword($passwordEncoder->encodePassword($user, $password));
 
-            if ($friendId !== null) {
+            // If there is an id and that id is not the id of the connected user
+            if ($friendId !== null && $friendId !== $this->getUser()->getId()) {
 
                 // retrieve the friend with its id
                 $friend = $userRepository->find($friendId);
-                
-                // add the friend to the user
-                $user->addMyfriend($friend);
+
+                if ($friend !== null && $friend->getStatus() == 2) { 
+                    // add the friend to the user only if the status of the friend is public
+                    $user->addMyfriend($friend);
+                }
             }
 
             
