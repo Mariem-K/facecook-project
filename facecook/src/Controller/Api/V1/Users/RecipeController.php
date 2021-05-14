@@ -5,9 +5,9 @@ namespace App\Controller\Api\V1\Users;
 use App\Entity\Category;
 use App\Entity\Recipe;
 use App\Entity\User;
-use App\Form\RecipeImageUploadType;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
+use App\Repository\UserRepository;
 use App\Service\ImageUploader;
 use App\Service\RecipeSlugger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -74,7 +74,7 @@ class RecipeController extends AbstractController
     /**
      * @Route("", name="add", methods={"POST"})
      */
-    public function add(Request $request, RecipeSlugger $slugger): Response
+    public function add(Request $request, RecipeSlugger $slugger, UserRepository $userRepository): Response
     {
         $recipe = new Recipe();
 
@@ -152,7 +152,7 @@ class RecipeController extends AbstractController
     /**
      * @Route("/{id}", name="edit", methods={"PUT", "PATCH"}, requirements={"id": "\d+"})
      */
-    public function edit(Recipe $recipe, Request $request, RecipeSlugger $slugger): Response
+    public function edit(Recipe $recipe, Request $request, RecipeSlugger $slugger, UserRepository $userRepository): Response
     {
         // We'll check if the user has the right to edit.
         $this->denyAccessUnlessGranted('edit', $recipe);
@@ -167,6 +167,7 @@ class RecipeController extends AbstractController
 
             // The user connected is associated with the recipe
             $recipe->setUser($this->getUser());
+
             // This updates the "updated at" property in the database. 
             $recipe->setUpdatedAt(new \DateTime());
 
