@@ -125,56 +125,12 @@ class UserController extends AbstractController
 
         $sentData = json_decode($request->getContent(), true);
 
-        // retrieve the friend's id
-        $friendId = (isset($sentData['friend'])) ? $sentData['friend'] : null;
-
-        // retrieves friend's id to remove
-        $friendToRemoveFromList = (isset($sentData['removeFriend'])) ? $sentData['removeFriend'] : null;
-
         $form->submit($sentData);
 
         if ($form->isValid()) {
             // Before submitting the new user, the password needs to be hashed. 
             $password = $form->get('password')->getData();
             $user->setPassword($passwordEncoder->encodePassword($user, $password));
-
-            // If there is an id and that id is not the id of the connected user
-            if ($friendId !== null && $friendId !== $this->getUser()->getId()) {
-
-                // retrieve the friend with its id
-                $friend = $userRepository->find($friendId);
-
-                if ($friend !== null && $friend->getStatus() == 2) { 
-                    // add the friend to the user only if the status of the friend is public
-                    $user->addMyfriend($friend);
-                }
-            }
-
-            if ($friendToRemoveFromList !== null) {
-                // retrieves friend to remove with id
-                $friendToRemove = $userRepository->find($friendToRemoveFromList);
-
-                // verifies if the $friendToRemove is different from null
-                if ($friendToRemove !== null) {
-                    // if it is, removes friend
-                    $user->removeMyfriend($friendToRemove);
-
-                    // get the visible recipes from friend (the recipes friend has the right to see)
-                    $friendToRemoveVisibleRecipes = $friendToRemove->getVisibleRecipes();
-
-                    // then proceeds to remove the visibility right on them one by one
-                    foreach ($friendToRemoveVisibleRecipes as $friendToRemoveVisibleRecipe) 
-                    {
-                        // verifies the users of visible recipes
-                        // if user of visible recipes = user connected
-                        if ($friendToRemoveVisibleRecipe->getUser() == $user) {
-                            // proceeds to remove visibility right on recipes of user connected
-                            $friendToRemove->removeVisibleRecipe($friendToRemoveVisibleRecipe);
-                        }
-                    }
-                }
-
-            }
             
             $this->getDoctrine()->getManager()->flush();
 
@@ -186,7 +142,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/friend", name="edit_friend", methods={"POST"})
+     * @Route("/{id}/friend", name="edit_friend_add", methods={"POST"})
      */
     public function addFriend(User $user, Request $request, UserRepository $userRepository)
     {
@@ -220,7 +176,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/friend", name="edit_friend", methods={"DELETE"})
+     * @Route("/{id}/friend", name="edit_friend_remove", methods={"DELETE"})
      */
     public function removeFriend(User $user, Request $request, UserRepository $userRepository)
     {
