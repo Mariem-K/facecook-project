@@ -19,8 +19,9 @@ class RecipeSlugger
      * @param string $string
      * @return string
      */
-    public function slugify(string $string): string
+    public function slugify(string $string, int $id): string
     {
-        return strtolower($this->slugger->slug($string));
+        $slug = $this->slugger->slug($string) . '-' . $id;
+        return strtolower($slug);
     }
 }
