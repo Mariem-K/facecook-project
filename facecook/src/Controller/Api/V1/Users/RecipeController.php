@@ -94,8 +94,7 @@ class RecipeController extends AbstractController
         $form->submit($sentData);
 
         if ($form->isValid()) {
-            $recipe->setSlug($slugger->slugify($recipe->getTitle(), $recipe->getId()));
-
+            $recipe->setSlug($slugger->slugify($recipe->getTitle()));
             // The user connected is associated with the recipe
             $recipe->setUser($this->getUser());
             
@@ -170,7 +169,7 @@ class RecipeController extends AbstractController
         $form->submit($sentData);
 
         if ($form->isValid()) {
-            $recipe->setSlug($slugger->slugify($recipe->getTitle(), $recipe->getId()));
+            $recipe->setSlug($slugger->slugify($recipe->getTitle()));
 
             // The user connected is associated with the recipe
             $recipe->setUser($this->getUser());
