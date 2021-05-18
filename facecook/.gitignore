@@ -23,3 +23,7 @@
 /public/images/avatars/*.png
 /public/images/recipes/*.jpg
 /public/images/recipes/*.png
+
+###> liip/imagine-bundle ###
+/public/media/cache/
+###< liip/imagine-bundle ###
