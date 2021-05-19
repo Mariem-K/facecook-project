@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 use App\Repository\UserRepository;
+use App\Service\ImageOptimizer;
 use App\Service\ImageUploader;
 use App\Service\RecipeSlugger;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -149,7 +150,6 @@ class RecipeController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($recipe);
         $entityManager->flush();
-
 
         return $this->json($recipe, 200, [], [
             'groups' => ['read_recipes', 'read_users', 'read_categories'],

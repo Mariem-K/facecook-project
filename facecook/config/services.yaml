@@ -35,3 +35,7 @@ services:
         class: App\EventSubscriber\AuthenticationSuccessSubscriber
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onLexikJwtAuthenticationOnAuthenticationSuccess }
+
+    # add alias to FilterService of LiipImagineBundle
+    Liip\ImagineBundle\Service\FilterService:
+        alias: 'liip_imagine.service.filter'
