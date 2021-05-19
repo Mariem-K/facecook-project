@@ -2,3 +2,11 @@
 liip_imagine:
     # valid drivers options include "gd" or "gmagick" or "imagick"
     driver: "gd"
+    filter_sets :
+        recipe_image :
+            quality: 75
+            filters :
+                fixed:
+                    width: 1350
+                    height: 650
+

@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 use App\Repository\UserRepository;
+use App\Service\ImageOptimizer;
 use App\Service\ImageUploader;
 use App\Service\RecipeSlugger;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -113,7 +114,7 @@ class RecipeController extends AbstractController
     /**
      * @Route("/{id}/image", name="edit_image", methods={"POST"}, requirements={"id": "\d+"})
      */
-    public function uploadImage(Recipe $recipe, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator): Response
+    public function uploadImage(Recipe $recipe, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator, ImageOptimizer $imageOptimizer): Response
     {
         // We'll check if the user has the right to edit.
         $this->denyAccessUnlessGranted('edit', $recipe);
@@ -147,7 +148,6 @@ class RecipeController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($recipe);
         $entityManager->flush();
-
 
         return $this->json($recipe, 200, [], [
             'groups' => ['read_recipes', 'read_users', 'read_categories'],
