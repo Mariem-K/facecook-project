@@ -54,6 +54,15 @@ class ImageUploader
             // The picture will be moved to a specific folder
             $avatar->move($_ENV['USER_AVATAR'], $newFileName);
 
+            // Filter the image
+            $this->imagine->getUrlOfFilteredImage('images/avatars/' . $newFileName, 'user_avatar');
+
+            // Remove the original image
+            unlink('images/avatars/' . $newFileName);
+
+            // Move the filter image
+            rename('media/cache/user_avatar/images/avatars/' . $newFileName, 'images/avatars/' . $newFileName);
+
             return $newFileName;
         }
 

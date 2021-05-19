@@ -114,7 +114,7 @@ class RecipeController extends AbstractController
     /**
      * @Route("/{id}/image", name="edit_image", methods={"POST"}, requirements={"id": "\d+"})
      */
-    public function uploadImage(Recipe $recipe, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator, ImageOptimizer $imageOptimizer): Response
+    public function uploadImage(Recipe $recipe, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator): Response
     {
         // We'll check if the user has the right to edit.
         $this->denyAccessUnlessGranted('edit', $recipe);
