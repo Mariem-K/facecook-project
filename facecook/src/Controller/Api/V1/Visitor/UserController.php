@@ -31,7 +31,9 @@ class UserController extends AbstractController
             // Before submitting the new user, the password needs to be hashed. 
             $password = $form->get('password')->getData();
             $user->setPassword($passwordEncoder->encodePassword($user, $password));
-            
+            // An avatar by default is associated to a user once an account is made
+            $user->setAvatar('default_img_avatar.png');
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();

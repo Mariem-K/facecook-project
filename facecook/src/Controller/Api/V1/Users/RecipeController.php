@@ -97,6 +97,8 @@ class RecipeController extends AbstractController
             $recipe->setSlug($slugger->slugify($recipe->getTitle()));
             // The user connected is associated with the recipe
             $recipe->setUser($this->getUser());
+            // An image by default is associated to a recipe
+            $recipe->setImage('default_img_recipe.png');
             
             $em = $this->getDoctrine()->getManager();
             $em->persist($recipe);
