@@ -44,34 +44,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("", name="add", methods={"POST"})
-     */
-    public function add(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
-    {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user, ['csrf_protection' => false]);
-
-        $sentData = json_decode($request->getContent(), true);
-        $form->submit($sentData);
-
-        if ($form->isValid()) {
-
-            // Before submitting the new user, the password needs to be hashed. 
-            $password = $form->get('password')->getData();
-            $user->setPassword($passwordEncoder->encodePassword($user, $password));
-            
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
-
-            return $this->json($user, 201, []);
-            
-        }
-
-        return $this->json($form->getErrors(true, false)->__toString(), 400);
-    }
-
-    /**
      * @Route("/{id}/avatar", name="edit_avatar", methods={"POST"})
      */
     public function uploadAvatar(User $user, Request $request, ImageUploader $imageUploader, ValidatorInterface $validator): Response
@@ -200,21 +172,5 @@ class UserController extends AbstractController
         } else {
             return $this->json('Bad request', 400);
         }
-    }
-
-    /**
-     * @Route("/{id}", name="delete", methods={"DELETE"}, requirements={"id": "\d+"})
-     */
-    public function delete (User $user): Response
-    {
-        //! Deleting a specific user is impossible with that method because of the foreign key in the recipe table 
-        //! This was expected behavior. 
-        //$this->denyAccessUnlessGranted('delete', $user);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($user);
-        $em->flush();
-
-        return $this->json(null, 204);
     }
 }
