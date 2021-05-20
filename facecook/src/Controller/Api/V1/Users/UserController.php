@@ -38,6 +38,9 @@ class UserController extends AbstractController
      */
     public function read(User $user): Response
     {
+        // We'll check if the user has the right to read the profile.
+        $this->denyAccessUnlessGranted('read', $user);
+
         return $this->json($user, 200, [], [
             'groups' => ['read_users'],
         ]);
@@ -91,7 +94,7 @@ class UserController extends AbstractController
     public function edit(User $user, Request $request, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository): Response
     {
         // We'll check if the user has the right to edit.
-        //$this->denyAccessUnlessGranted('edit', $user);
+        $this->denyAccessUnlessGranted('edit', $user);
 
         $form = $this->createForm(UserType::class, $user, ['csrf_protection' => false]);
 

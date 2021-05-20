@@ -12,7 +12,7 @@ class UserVoter extends Voter
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, ['edit'])
+        return in_array($attribute, ['edit', 'read'])
             && $subject instanceof \App\Entity\User;
     }
 
@@ -27,6 +27,7 @@ class UserVoter extends Voter
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case 'edit':
+            case 'read':
                 // logic to determine if the user can EDIT
                 // return true or false
                 if ($subject == $user) {
