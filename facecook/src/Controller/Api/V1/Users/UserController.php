@@ -26,7 +26,11 @@ class UserController extends AbstractController
      */
     public function browse(UserRepository $userRepository): Response
     {
-        $users = $userRepository->findUsersByPublicStatus(2); 
+
+        $user = $this->getUser();
+        $friends = $user->getMyFriends();
+
+        $users = $userRepository->findUsersByPublicStatus($user, $friends); 
           
         return $this->json($users, 200, [], [
             'groups' => ['browse_users'],

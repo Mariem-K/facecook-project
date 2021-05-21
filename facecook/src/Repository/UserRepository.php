@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -38,12 +39,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     /**
      * Handmade function to return users only with status 2 (public status)
+     * and not the connected user and the friends
      */
-    public function findUsersByPublicStatus(?int $status = null)
+    public function findUsersByPublicStatus($user, $friends)
     {
-        return $this->createQueryBuilder('u')
-        ->where('u.status = :status')
-        ->setParameter('status', $status)
+        $qb = $this->createQueryBuilder('u');
+
+        return $qb
+        ->add('where', $qb->expr()->andX(
+            $qb->expr()->eq('u.status', '?1'),
+            $qb->expr()->neq('u.id', '?2'),
+            $qb->expr()->notIn('u.id', '?3')
+        ))
+        ->setParameter('1', 2)
+        ->setParameter('2', $user->getId())
+        ->setParameter('3', $friends)
         ->getQuery()
         ->getResult()
         ;
