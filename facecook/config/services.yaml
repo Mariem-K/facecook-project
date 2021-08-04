@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    recipe_pictures.directory: '%kernel.project_dir%/public/%env(resolve:RECIPE_PICTURE)%'
+    user_avatar.directory: '%kernel.project_dir%/public/%env(resolve:USER_AVATAR)%'
 
 services:
     # default configuration for services in *this* file
@@ -29,3 +31,11 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    acme_api.event.authentication_success_listener:
+        class: App\EventSubscriber\AuthenticationSuccessSubscriber
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onLexikJwtAuthenticationOnAuthenticationSuccess }
+
+    # add alias to FilterService of LiipImagineBundle
+    Liip\ImagineBundle\Service\FilterService:
+        alias: 'liip_imagine.service.filter'
